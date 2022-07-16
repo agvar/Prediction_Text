@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-f+%nf-w!!!_k0*j7bc427cf-z7t8iw^xv-wgjcz94emiau5b9j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['prediction-api-env.eba-6qj33qx3.us-west-2.elasticbeanstalk.com',' 35.167.222.231']
+#ALLOWED_HOSTS = ['prediction-api-env.eba-6qj33qx3.us-west-2.elasticbeanstalk.com',' 35.167.222.231']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'Prediction_API.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/ 'templates'],
+        'DIRS': [ BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -40,15 +40,6 @@ def predict_sentiment(text):
 
 # Create your views here.
 
-@api_view(['GET'])
-def home(request):
-    return_value={
-        "error_code" : "0",
-        "info" : "success"
-    }
-    return Response(return_value)
-
-
 @api_view(['POST'])
 def predict(request):
     input_data=str(request.data.values())
