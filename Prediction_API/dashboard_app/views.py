@@ -1,13 +1,16 @@
 from django.shortcuts import render
 import pandas as pd
 import boto3
+import datetime.datetime 
+
 
 s3_bucket = 'dataset20200101projectfiles'
-s3 = boto3.client('s3')
-s3_file = s3.get_object(Bucket=s3_bucket,Key='capstone/input_data/twitter_sentiment140/twitter_sentiment.zip')
-s3_status = s3_file.get("ResponseMetadata", {}).get("HTTPStatusCode")
-print("read input file")
-input_file_sentiment="E:\\python_projects\\Springboard\datasets\\twitter_sentiment140\\training_140_sentiment.csv"
+s3_resource = boto3.resource('s3')
+s3_stream_folder = 'capstone/output_tweets/streaming/'
+for file in s3_resource.Bucket(s3_bucket).objects.filter(Prefix=s3_stream_folder):
+    if file.last_modified.replace(tzinfo = None) > datetime.datetime(YEAR,MONTH, DAY,tzinfo = None):
+
+
 sentiment_colls=['sentiment','tweet_id','tweet_date','query','username','tweet']
 tweet_df=pd.read_csv(input_file_sentiment,encoding='cp1252',names=sentiment_colls,usecols=['sentiment','tweet'])
 #if s3_status==200:
