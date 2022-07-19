@@ -11,6 +11,7 @@ import plotly.express as px
 import numpy as np
 from pathlib import Path
 
+
 s3_bucket = 'dataset20200101projectfiles'
 s3_stream_folder = 'capstone/output_tweets/streaming/'
 file_loc_ts_s3='capstone/output_tweets/last_updated_ts/last_updated_ts.csv'
@@ -92,12 +93,10 @@ def dashboard(request):
     end_time = datetime.now().time().strftime('%H:%M:%S')
     total_time=(datetime.strptime(end_time,'%H:%M:%S') - datetime.strptime(start_time,'%H:%M:%S'))
     print(f" time taken : {total_time}")
-    #print(df_grp)
+    
     fig=px.histogram(df_grp,x="created_at_day",y="count",color="model_api_sentiment")
-    chart=fig.to_html()
-    context={'chart':chart}
-    #save_latest_ts_s3(s3_file_ts,latest_ts_updated)
-    return render(request,'index.html',context)
+    plot_div=plot(fig,output_type='div')
+    return render(request, "index.html", context={'plot_div': plot_div})
     
 
 # Create your views here.
