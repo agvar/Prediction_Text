@@ -98,9 +98,7 @@ class TwitterStreamListener(tweepy.StreamListener):
        if status_code==420:
             return False
 
-#main function
-if __name__=='__main__':
-
+def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('file_max_tweet',help='The maximum number of tweeets to be stored in a file, needs to be less than 10,000,000',type=int)
     parser.add_argument('collect_max_tweet',help='The maximum number of tweeets to be collected, needs to be less than 100,000', type=int)
@@ -140,6 +138,10 @@ if __name__=='__main__':
     twitter_stream=tweepy.Stream(auth=api.auth,listener=twitterstreamlistener)
     twitter_stream.filter(track=["the","i","to","a","and","is","in","it","you","of","for","on","my","me","at","this"],languages=["en"])
     #twitter_stream.filter(track=None,languages=["en"])
+
+if __name__=='__main__':
+    main()
+
 
 
 

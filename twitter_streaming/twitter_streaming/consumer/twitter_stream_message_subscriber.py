@@ -82,11 +82,7 @@ def read_tweet_stream(kinesis_client,stream_name):
             else:
                 break
 
-
-
-#main function
-if __name__=='__main__':
-    #creating kinesis client and s3 resource
+def main():
     try:
         kinesis_client=boto3.client('kinesis',region_name='us-west-2')
     except Exception as e:
@@ -106,6 +102,10 @@ if __name__=='__main__':
     stream_name = 'tweet_stream'
     sentiment_prediction_endpoint='http://prediction-api-env.eba-6qj33qx3.us-west-2.elasticbeanstalk.com/predict'
     read_tweet_stream(kinesis_client,stream_name)
+
+if __name__=='__main__':
+    main()
+    
 
 
 
