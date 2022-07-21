@@ -5,8 +5,14 @@ from datetime import datetime
 import json
 import argparse
 import boto3
-from twitter_credentials  import API_key,API_secret_key,Access_token,Acess_token_secret
 import requests
+from dotenv import load_dotenv
+dotenv_path=Path(__file__).resolve().parents[2]
+load_dotenv()
+API_key=os.getenv('API_key')
+API_secret_key=os.getenv('API_secret_key')
+Access_token=os.getenv('Access_token')
+Acess_token_secret=os.getenv('Acess_token_secret')
 
 
 def save_tweet_s3(data_list):
