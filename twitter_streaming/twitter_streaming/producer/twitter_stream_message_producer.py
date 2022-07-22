@@ -7,81 +7,87 @@ import argparse
 import boto3
 from pathlib import Path
 from dotenv import load_dotenv
-dotenv_path=Path(__file__).resolve().parents[2]
-load_dotenv()
-API_key=os.getenv('API_key')
-API_secret_key=os.getenv('API_secret_key')
-Access_token=os.getenv('Access_token')
-Acess_token_secret=os.getenv('Acess_token_secret')
-
-def process_tweet(tweet):
-    if "extended_tweet" in tweet:
-        extended_tweet_text=tweet["extended_tweet"]["full_text"]
-    else:
-        extended_tweet_text=None
-    if "text" in tweet:
-        text = tweet["text"]
-    else:
-        text=None
-
-    if "time_zone" in tweet["user"]:
-        time_zone=tweet["user"]["time_zone"]
-    else:
-        time_zone=None
-
-    data={"tweet_id":tweet["id"],
-        "created_at":tweet["created_at"],
-          "text":text,
-          "extended_tweet_text":extended_tweet_text,
-          "source":tweet["source"],
-          "user":tweet["user"]["id"],
-          "followers_count":tweet['user']["followers_count"],
-          "friends_count":tweet['user']["friends_count"],
-          "geo_enabled":tweet["user"]["geo_enabled"],
-          "time_zone":time_zone,
-          "geo":tweet["geo"],
-          "coordinates":tweet["coordinates"]
-
-        }
-    return(data)
-
-def save_tweet_s3(data_list):
-    current_ts = datetime.now().strftime("%Y%m%d%H%M%S%f")
-    s3_bucket = 'dataset20200101projectfiles'
-    s3_file = s3.Object(s3_bucket, 'capstone/input_data/streaming/tweets_stream_' + current_ts + '.json')
-    return_s3 = s3_file.put(Body=(bytes(json.dumps(data_list).encode('UTF-8'))))
-    if return_s3['ResponseMetadata']['HTTPStatusCode'] != 200:
-        print("Failed to upload files to s3 bucket :{s3_bucket}")
-        sys.exit(1)
-
-def push_tweet_stream(data_list):
-    stream_name='tweet_stream'
-    try:
-        response_stream = kinesis_client.put_record(StreamName=stream_name, Data=json.dumps(data_list),PartitionKey='partition_key')
-
-    except Exception as e:
-        print(f"Failed writing to stream:{e}")
-
-    if response_stream['ResponseMetadata']['HTTPStatusCode'] != 200:
-        print("Failed to push data to stream :{stream_name}")
-        sys.exit(1)
-    shard_id=response_stream['ShardId']
-    shard_sequence=response_stream['SequenceNumber']
+import configparser
 
 
 #Streaming class override
 class TwitterStreamListener(tweepy.StreamListener):
-    def __init__(self,file_max_tweet=100,collect_max_tweet=10):
+    def __init__(self,s3_resource,kinesis_client,stream_name,s3_bucket,s3_folder,file_max_tweet=100,collect_max_tweet=10):
         super(TwitterStreamListener,self).__init__()
         self.file_max_tweet=file_max_tweet
         self.tweet_counter=0
         self.data_list=[]
         self.collect_max_tweet=collect_max_tweet
+        self.s3_resource=s3_resource
+        self.kinesis_client=kinesis_client
+        self.stream_name=stream_name
+        self.s3_bucket=s3_bucket
+        self.s3_folder=s3_folder
 
+
+    #
+    def process_tweet(self,tweet):
+        if "extended_tweet" in tweet:
+            extended_tweet_text=tweet["extended_tweet"]["full_text"]
+        else:
+            extended_tweet_text=None
+        if "text" in tweet:
+            text = tweet["text"]
+        else:
+            text=None
+
+        if "time_zone" in tweet["user"]:
+            time_zone=tweet["user"]["time_zone"]
+        else:
+            time_zone=None
+
+        data={"tweet_id":tweet["id"],
+            "created_at":tweet["created_at"],
+            "text":text,
+            "extended_tweet_text":extended_tweet_text,
+            "source":tweet["source"],
+            "user":tweet["user"]["id"],
+            "followers_count":tweet['user']["followers_count"],
+            "friends_count":tweet['user']["friends_count"],
+            "geo_enabled":tweet["user"]["geo_enabled"],
+            "time_zone":time_zone,
+            "geo":tweet["geo"],
+            "coordinates":tweet["coordinates"]
+
+            }
+        return(data)
+
+    def save_tweet_s3(self):
+        current_ts = datetime.now().strftime("%Y%m%d%H%M%S%f")
+        s3_file = self.s3_resource.Object(self.s3_bucket, self.s3_folder + current_ts + '.json')
+        try:
+            return_s3 = s3_file.put(Body=(bytes(json.dumps(self.data_list).encode('UTF-8'))))
+        except:
+            print(f"Failed to upload files to s3 bucket :{s3_bucket}")
+            sys.exit(1)
+        if return_s3['ResponseMetadata']['HTTPStatusCode'] != 200:
+            print(f"Failed to upload files to s3 bucket :{s3_bucket}")
+            sys.exit(1)
+
+    def push_tweet_stream(self):
+        try:
+            response_stream = self.kinesis_client.put_record(StreamName=stream_name, Data=json.dumps(self.data_list),PartitionKey='partition_key')
+
+        except Exception as e:
+            print(f"Failed writing to stream:{e}")
+            sys.exit(1)
+
+        if response_stream['ResponseMetadata']['HTTPStatusCode'] != 200:
+            print(f"Failed to push data to stream :{stream_name}")
+            sys.exit(1)
+        shard_id=response_stream['ShardId']
+        shard_sequence=response_stream['SequenceNumber']
+
+    #
 
     def on_status(self,status):
         tweet=status._json
-        data=process_tweet(tweet)
+        data=self.process_tweet(tweet)
         self.tweet_counter+=1
         if self.tweet_counter % 1000==0:
             print(f"Processed tweets:{self.tweet_counter}")
@@ -91,8 +97,8 @@ class TwitterStreamListener(tweepy.StreamListener):
             if len(self.data_list)<self.file_max_tweet:
                 self.data_list.append(data)
                 if len(self.data_list)==self.file_max_tweet:
-                    save_tweet_s3(self.data_list)
-                    push_tweet_stream(self.data_list)
+                    self.save_tweet_s3()
+                    self.push_tweet_stream()
                     self.data_list=[]
 
 #       if status.retweeted:
@@ -102,20 +108,9 @@ class TwitterStreamListener(tweepy.StreamListener):
        print(f"Error status code is{status_code}")
        if status_code==420:
             return False
+    
 
-def main():
-    parser=argparse.ArgumentParser()
-    parser.add_argument('file_max_tweet',help='The maximum number of tweeets to be stored in a file, needs to be less than 10,000,000',type=int)
-    parser.add_argument('collect_max_tweet',help='The maximum number of tweeets to be collected, needs to be less than 100,000', type=int)
-    args=parser.parse_args()
-
-    if args.file_max_tweet>1000000 or args.collect_max_tweet>10000000:
-        print("The maximum tweets to be collected or tweets per file are over the limit.")
-        sys.exit(1)
-    if args.file_max_tweet>args.collect_max_tweet:
-        print("The maximum tweets to be collected cannot be greater than the tweets per file.")
-        sys.exit(1)
-
+def main(API_key, API_secret_key,Access_token, Acess_token_secret,region,stream_name,s3_bucket,s3_folder,stream_filter,stream_language):
     # Authentication and creation of an api object
     auth = tweepy.OAuthHandler(API_key, API_secret_key)
     auth.set_access_token(Access_token, Acess_token_secret)
@@ -128,24 +123,70 @@ def main():
 
     #creating kinesis client and s3 resource
     try:
-        kinesis_client=boto3.client('kinesis',region_name='us-west-2')
+        kinesis_client=boto3.client('kinesis',region_name=region)
+        print("kinesis resource OK")
     except Exception as e:
         print(e)
         sys.exit(1)
     try:
-        s3 = boto3.resource('s3')
+        s3_resource = boto3.resource('s3')
+        print("kinesis resource OK")
     except Exception as e:
         print(e)
         sys.exit(1)
 
-    #creating a stream to the twitter api
-    twitterstreamlistener=TwitterStreamListener(args.file_max_tweet,args.collect_max_tweet)
-    twitter_stream=tweepy.Stream(auth=api.auth,listener=twitterstreamlistener)
-    twitter_stream.filter(track=["the","i","to","a","and","is","in","it","you","of","for","on","my","me","at","this"],languages=["en"])
-    #twitter_stream.filter(track=None,languages=["en"])
+    print("creating tweepy listener")
+    try:
+        twitterstreamlistener=TwitterStreamListener(s3_resource,kinesis_client,stream_name,s3_bucket,s3_folder,args.file_max_tweet,args.collect_max_tweet)
+        twitter_stream=tweepy.Stream(auth=api.auth,listener=twitterstreamlistener)
+        twitter_stream.filter(track=[stream_filter],languages=[stream_language])
+        print("creating listener complete")
+    except Exception as e:
+        print(f"error creating tweepy listener : {e}")
+        sys.exit(1)
 
 if __name__=='__main__':
-    main()
+    try:
+        dotenv_path=Path(__file__).resolve().parents[2]
+        load_dotenv()
+        API_key=os.getenv('API_key')
+        API_secret_key=os.getenv('API_secret_key')
+        Access_token=os.getenv('Access_token')
+        Acess_token_secret=os.getenv('Acess_token_secret')
+    except Exception as e:
+        print(f"error reading from .env file at {dotenv_path}: {e}")
+        sys.exit(1)
+    
+    try:
+        config_path=Path(__file__).resolve().parents[2] / 'twitter_streaming.ini'
+        config=configparser.ConfigParser()
+        config.read(config_path)
+        region=config.get('AWS resources','region')
+        stream_name=config.get('AWS resources','stream_name')
+        entiment_prediction_endpoint=config.get('AWS resources','sentiment_prediction_endpoint')
+        s3_bucket=config.get('AWS resources','s3_bucket')
+        s3_folder=config.get('AWS resources','s3_folder_input')
+        stream_filter=config.get('twitter','stream_filter')
+        stream_language=config.get('twitter','stream_language')
+        file_max_tweet_limit=int(config.get('twitter','file_max_tweet_limit'))
+        collect_max_tweet_limt=int(config.get('twitter','collect_max_tweet_limt'))
+    except Exception as e:
+        print(f"error reading from {config_path}:{e}")
+        sys.exit(1)
+
+    parser=argparse.ArgumentParser()
+    parser.add_argument('file_max_tweet',help='The maximum number of tweeets to be stored in a file, needs to be less than 10,000,000',type=int)
+    parser.add_argument('collect_max_tweet',help='The maximum number of tweeets to be collected, needs to be less than 100,000', type=int)
+    args=parser.parse_args()
+
+    if args.file_max_tweet>file_max_tweet_limit or args.collect_max_tweet>collect_max_tweet_limt:
+        print(f"The maximum tweets to be collected or tweets per file are over the limit ")
+        sys.exit(1)
+    if args.file_max_tweet>args.collect_max_tweet:
+        print(f"The maximum tweets to be collected cannot be greater than the tweets per file.")
+        sys.exit(1)
+
+    main(API_key, API_secret_key,Access_token, Acess_token_secret,region,stream_name,s3_bucket,s3_folder,stream_filter,stream_language)
 
 
 
