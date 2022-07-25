@@ -10,6 +10,7 @@ import configparser
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 def save_tweet_s3(s3_resource,data_list,s3_bucket,s3_folder):
     current_ts = datetime.now().strftime("%Y%m%d%H%M%S%f")
     s3_file = s3_resource.Object(s3_bucket, s3_folder + current_ts + '.json')
@@ -40,7 +41,7 @@ def read_tweet_stream(s3_resource,kinesis_client,stream_name,sentiment_predictio
             print(f"Failed to get shards:{e}")
         ShardId = shard['ShardId']
         ShardIterator=response_shard_iterator['ShardIterator']
-        #print(f'shard id, shard iterator :{ShardId},{ShardIterator}')
+        print(f'reading {ShardId} from {stream_name}')
         while ShardIterator:
             data_records=kinesis_client.get_records(ShardIterator=ShardIterator)
             if len(data_records['Records'])>0:

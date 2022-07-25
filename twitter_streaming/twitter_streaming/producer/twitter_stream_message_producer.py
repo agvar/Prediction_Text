@@ -9,7 +9,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import configparser
 
-
 #Streaming class override
 class TwitterStreamListener(tweepy.StreamListener):
     def __init__(self,s3_resource,kinesis_client,stream_name,s3_bucket,s3_folder,file_max_tweet=100,collect_max_tweet=10):
@@ -82,7 +81,7 @@ class TwitterStreamListener(tweepy.StreamListener):
             sys.exit(1)
         shard_id=response_stream['ShardId']
         shard_sequence=response_stream['SequenceNumber']
-
+        print(f"{shard_id} pushed to {stream_name}")
     #
 
     def on_status(self,status):
@@ -130,7 +129,7 @@ def main(API_key, API_secret_key,Access_token, Acess_token_secret,region,stream_
         sys.exit(1)
     try:
         s3_resource = boto3.resource('s3')
-        print("kinesis resource OK")
+        print("S3 resource OK")
     except Exception as e:
         print(e)
         sys.exit(1)
@@ -175,8 +174,8 @@ if __name__=='__main__':
         sys.exit(1)
 
     parser=argparse.ArgumentParser()
-    parser.add_argument('file_max_tweet',help='The maximum number of tweeets to be stored in a file, needs to be less than 10,000,000',type=int)
-    parser.add_argument('collect_max_tweet',help='The maximum number of tweeets to be collected, needs to be less than 100,000', type=int)
+    parser.add_argument(f'file_max_tweet',help='The maximum number of tweeets to be stored in a file, needs to be less than {file_max_tweet_limit}',type=int)
+    parser.add_argument(f'collect_max_tweet',help='The maximum number of tweeets to be collected, needs to be less than {collect_max_tweet_limt}', type=int)
     args=parser.parse_args()
 
     if args.file_max_tweet>file_max_tweet_limit or args.collect_max_tweet>collect_max_tweet_limt:
