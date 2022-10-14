@@ -1,5 +1,5 @@
 ![ Stats](https://github-readme-stats.vercel.app/api/top-langs/?username=agvar&theme=blue-green)
-<img src=https://komarev.com/ghpvc/?username =agvar/>
+<img src=https://komarev.com/ghpvc/?username=agvar/>
 
 # Twitter Sentiment Prediction
 
