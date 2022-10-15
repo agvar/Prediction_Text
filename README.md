@@ -10,7 +10,7 @@ The API is a Django application that uses a Logistic Regression model to make pr
 The twitter topic to be used when pulling tweets can be configured ,along with the number of tweets to be pulled, at a time.
 The raw tweets and the predictions are stored on AWS S3 as json files
 
-## Table of Contents (Optional)
+## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
