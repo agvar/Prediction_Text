@@ -1,5 +1,4 @@
-![ Stats](https://github-readme-stats.vercel.app/api/top-langs/?username=agvar&theme=blue-green)
-<img src=https://komarev.com/ghpvc/?username=agvar/>
+https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
 
 # Twitter Sentiment Prediction
 
