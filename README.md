@@ -1,4 +1,4 @@
-https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
 # Twitter Sentiment Prediction
 
