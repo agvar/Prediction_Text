@@ -4,26 +4,26 @@
 
 ## Description
 
-The project was created as part of the Machine Learning Bootcamp capstone project
-The project predicts the sentiment ( positive or negetive ) on real-time tweets . Tweets are read using the tweepy API with a python Producer process, and pushed into a Kinesis data stream . A consumer python process reads the tweets and calls the prediction API to predict the sentiment.
-The API is a Django application that uses a Logistic Regression model to make predictions. The response predications are displayed on a dashboard to depict trends.
+The project was created as part of the Springboard Machine Learning Bootcamp capstone project.  
+It predicts the sentiment ( positive or negetive ) on real-time tweets . Tweets are read using the tweepy API with a python Producer process, and pushed into a Kinesis data stream . A consumer python process reads the tweets and calls the prediction API to predict the sentiment.  
+The API is a Django application that uses a Logistic Regression model to make predictions. The response predications are displayed on a dashboard to depict trends, in Django.  
 The twitter topic to be used when pulling tweets can be configured ,along with the number of tweets to be pulled, at a time.
 The raw tweets and the predictions are stored on AWS S3 as json files
 
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage](#usage)
+- [ProcessFlow](#process flow)
+- [DataAnalysis](#data analysis)
+- [ProjectOrganization](#project organization)
 - [Credits](#credits)
 - [License](#license)
 
 ## Installation
 
-To install the django api ->
-To install the twitter consumer and producer ->
-To install the ML prediction analysis,notebook ,data preprocessing ->
-
-## Usage
+To install the django api -> pip install -r requirements.txt
+To install the twitter consumer and producer -> pip install -r requirements.txt
+To install the ML prediction analysis,notebook ,data preprocessing -> pip install -r requirements.txt
 
 ## Process Flow
 
