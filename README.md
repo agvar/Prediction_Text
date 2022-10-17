@@ -13,16 +13,16 @@ The raw tweets and the predictions are stored on AWS S3 as json files
 ## Table of Contents
 
 - [Installation](#installation)
-- [ProcessFlow](#process flow)
-- [DataAnalysis](#data analysis)
-- [ProjectOrganization](#project organization)
+- [Process Flow](#process-flow)
+- [Data Analysis](#data-analysis)
+- [Project Organization](#project-organization)
 - [Credits](#credits)
 - [License](#license)
 
 ## Installation
 
-To install the django api -> pip install -r requirements.txt
-To install the twitter consumer and producer -> pip install -r requirements.txt
+To install the django api -> pip install -r requirements.txt  
+To install the twitter consumer and producer -> pip install -r requirements.txt  
 To install the ML prediction analysis,notebook ,data preprocessing -> pip install -r requirements.txt
 
 ## Process Flow
