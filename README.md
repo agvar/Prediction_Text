@@ -40,7 +40,7 @@ Data preprocessing ,vectorization ,evaluation of multiple models and training in
 ## Installation
 
 Clone the repository  
-`git clone git@github.com:agvar/Deep_Learning_Text.git`
+`git clone git@github.com:agvar/Prediction_Text.git`
 
 ### Install django on AWS Elastic Beanstalk
 
