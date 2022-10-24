@@ -45,18 +45,18 @@ Follow the aws guide:
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-django.html  
 The following changes need to be made after the initial Beanstalk deployment
 
-1. The first time the env and application are created in EBS, make sure the only config file in the .ebextensions has the boiler plate code- make sure the application name is modified
-   `option_settings:`
-   `aws:elasticbeanstalk:container:python:`
+1. The first time the env and application are created in EBS, make sure the only config file in the .ebextensions has the boiler plate code- make sure the application name is modified  
+   `option_settings:`  
+   `aws:elasticbeanstalk:container:python:`  
    `WSGIPath: ebdjango.wsgi:application`
 2. Check the eb status- the status would RED meaning the application is not ready or usable
-3. change the config files to as follows
-   **The django.config**
-   `option_settings:`
-   `aws:elasticbeanstalk:application:environment:`
-   `DJANGO_SETTINGS_MODULE: "Prediction_API.settings"`
-   `PYTHONPATH: "/var/app/current:$PYTHONPATH"`
-   `aws:elasticbeanstalk:container:python:`
+3. change the config files to as follows  
+   **The django.config**  
+   `option_settings:`  
+   `aws:elasticbeanstalk:application:environment:`  
+   `DJANGO_SETTINGS_MODULE: "Prediction_API.settings"`  
+   `PYTHONPATH: "/var/app/current:$PYTHONPATH"`  
+   `aws:elasticbeanstalk:container:python:`  
    `WSGIPath: Prediction_API.wsgi:application`
 
 **The ngix.config**( This is added to increase the timeouts)  
@@ -123,7 +123,7 @@ The consumer process reads tweets from Kinesis and calls the tensorFlow api to m
 
 ## Credits
 
-https://ileriayo.github.io/markdown-badges/
+https://ileriayo.github.io/markdown-badges/  
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-django.html
 
 ## License
