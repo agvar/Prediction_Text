@@ -20,6 +20,10 @@ The raw tweets and the predictions are stored on AWS S3 as json files
 - [Credits](#credits)
 - [License](#license)
 
+## Process Flow
+
+![Architecture Diagram](https://github.com/agvar/Prediction_Text/blob/master/images/capstone_project_architecture.jpeg)
+
 ## Data Collection
 
 Datasets used:
@@ -107,10 +111,6 @@ Modify the ./twitter_streaming/twitter_streaming.ini file as needed to update th
 **To execute Consumer process**
 `python ./twitter_streaming/twitter_streaming/consumer/twitter_stream_message_consumer.py`
 The consumer process reads tweets from Kinesis and calls the tensorFlow api to make predictions and stores them on s3.
-
-## Process Flow
-
-![Architecture Diagram](https://github.com/agvar/Prediction_Text/blob/master/images/capstone_project_architecture.jpeg)
 
 ## Project Organization
 
