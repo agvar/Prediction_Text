@@ -4,11 +4,9 @@
 
 ## Description
 
-The project was created as part of the Springboard Machine Learning Bootcamp capstone project.  
-It predicts the sentiment ( positive or negetive ) on real-time tweets . Tweets are read using the tweepy API with a python Producer process, and pushed into a Kinesis data stream . A consumer python process reads the tweets and calls the prediction API to predict the sentiment.  
-The API is a Django application that uses a Logistic Regression model to make predictions. The response predications are displayed on a dashboard to depict trends, in Django.  
-The twitter topic to be used when pulling tweets can be configured ,along with the number of tweets to be pulled, at a time.
-The raw tweets and the predictions are stored on AWS S3 as json files
+The project predicts the sentiment ( positive or negative) on real-time tweets. Tweets are read using the tweepy API with a python Producer process and pushed into a Kinesis data stream. A consumer python process reads the tweets and calls the prediction API to predict the sentiment.
+The API is a Django application that uses a Logistic Regression model to make predictions. In Django, the response predictions are displayed on a dashboard to depict trends.
+The Twitter topic to be used when pulling tweets can be configured, along with the number of tweets to be read, at a time. The raw tweets and the predictions are stored on AWS S3 as JSON files
 
 ## Table of Contents
 
